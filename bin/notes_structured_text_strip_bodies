@@ -2,6 +2,7 @@
 $: << File.expand_path("../../lib", __FILE__)
 require 'notes_structured_text_strip_bodies'
 require 'optparse'
+require 'logger'
 
 options={}
 
@@ -16,11 +17,15 @@ OptionParser.new do |opts|
 end.parse!
 
 raise USAGE if ARGV.length<2
-raise "<output_dir> must be a directory\n#{USAGE}" if !File.directory?(ARGV[0])
 
 output_dir = ARGV[0]
 input_files = ARGV[1..-1]
+raise "<output_dir>: #{output_dir} must be a directory\n#{USAGE}" if !File.directory?(output_dir)
 
-p options
-p "output: #{output_dir}"
-p "input: #{input_files.inspect}"
+NotesStructuredTextStripBodies.logger = Logger.new($stderr)
+if options[:verbose]
+  NotesStructuredTextStripBodies.logger.level=Logger::DEBUG
+else
+  NotesStructuredTextStripBodies.logger.level=Logger::INFO
+end
+NotesStructuredTextStripBodies.strip_files(output_dir, input_files, options)
