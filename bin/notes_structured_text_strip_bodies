@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+$: << File.expand_path("../../lib", __FILE__)
+require 'notes_structured_text_strip_bodies'
+require 'optparse'
+
+options={}
+
+USAGE = "Usage: #{File.basename(__FILE__)} <output_dir> <input_files> [<input_file>]* "
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{File.basename(__FILE__)} <output_dir> <input_files> [<input_file>]* "
+
+  opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+    options[:verbose] = v
+  end
+end.parse!
+
+raise USAGE if ARGV.length<2
+raise "<output_dir> must be a directory\n#{USAGE}" if !File.directory?(ARGV[0])
+
+output_dir = ARGV[0]
+input_files = ARGV[1..-1]
+
+p options
+p "output: #{output_dir}"
+p "input: #{input_files.inspect}"
