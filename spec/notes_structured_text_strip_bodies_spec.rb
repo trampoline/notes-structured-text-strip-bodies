@@ -5,17 +5,44 @@ describe NotesStructuredTextStripBodies do
   describe "strip_files" do
     it "should call strip_file once per input_file with one input file" do
       output_dir = Object.new
+      stub(File).directory?(output_dir){true}
+
+      input_file_glob = Object.new
       input_file = Object.new
+
+      stub(Dir).[](input_file_glob){[input_file]}
       mock(NotesStructuredTextStripBodies).strip_file(output_dir, input_file)
-      NotesStructuredTextStripBodies.strip_files(output_dir, input_file)
+      NotesStructuredTextStripBodies.strip_files(output_dir, input_file_glob)
     end
 
     it "should call strip_file once per input_file with multiple input files" do
       output_dir = Object.new
+      stub(File).directory?(output_dir){true}
+
+      input_file_globs = [Object.new, Object.new]
       input_files = [Object.new, Object.new]
+      stub(Dir).[](input_file_globs[0]){[input_files[0]]}
+      stub(Dir).[](input_file_globs[1]){[input_files[1]]}
+
       mock(NotesStructuredTextStripBodies).strip_file(output_dir, input_files[0])
       mock(NotesStructuredTextStripBodies).strip_file(output_dir, input_files[1])
-      NotesStructuredTextStripBodies.strip_files(output_dir, input_files)
+      NotesStructuredTextStripBodies.strip_files(output_dir, input_file_globs)
+    end
+
+    it "should expand globs in the input_files" do
+      output_dir = Object.new
+      stub(File).directory?(output_dir){true}
+
+      input_file_globs = [Object.new, Object.new]
+      input_files = [Object.new, Object.new, Object.new, Object.new]
+      stub(Dir).[](input_file_globs[0]){[input_files[0], input_files[1]]}
+      stub(Dir).[](input_file_globs[1]){[input_files[2], input_files[3]]}
+
+      mock(NotesStructuredTextStripBodies).strip_file(output_dir, input_files[0])
+      mock(NotesStructuredTextStripBodies).strip_file(output_dir, input_files[1])
+      mock(NotesStructuredTextStripBodies).strip_file(output_dir, input_files[2])
+      mock(NotesStructuredTextStripBodies).strip_file(output_dir, input_files[3])
+      NotesStructuredTextStripBodies.strip_files(output_dir, input_file_globs)
     end
   end
   
@@ -23,6 +50,7 @@ describe NotesStructuredTextStripBodies do
     it "should open a new output file for writing, the input file for reading and call strip" do
       output_dir = "/foo/bar"
       input_file = "baz/boo.txt"
+      mock(File).file?("baz/boo.txt"){true}
 
       logdev = Object.new
       stub(NotesStructuredTextStripBodies).logdev{logdev}

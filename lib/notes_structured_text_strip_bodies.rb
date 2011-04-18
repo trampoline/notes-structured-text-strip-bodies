@@ -10,10 +10,19 @@ module NotesStructuredTextStripBodies
   end
 
   def strip_files(output_dir, input_files, options={})
-    log{|logger| logger.info("stripping to output directory: #{output_dir}")}
-    input_files = [*input_files]
-    input_files.each do |input_file|
-      strip_file(output_dir, input_file)
+    raise "<output_dir>: #{output_dir} must be a directory" if !File.directory?(output_dir)
+
+    log{|logger| logger.info("stripping to output directory: '#{output_dir}'")}
+
+    [*input_files].each do |input_file_glob|
+      log{|logger| logger.info("processing glob: '#{input_file_glob}'")}
+
+      glob_matches = Dir[input_file_glob]
+      log{|logger| logger.warn("no files match glob: '#{input_file_glob}'")} if glob_matches.empty?
+
+      glob_matches.each do |input_file|
+        strip_file(output_dir, input_file)
+      end
     end
   end
 
@@ -22,7 +31,7 @@ module NotesStructuredTextStripBodies
     raise "<input_file>: #{input_file} does not exist or is not a regular file" if !File.file?(input_file)
     File.open(input_file, "r") do |input|
       File.open(output_file, "w") do |output|
-        log{|logger| logger.debug("stripping: #{input_file} => #{output_file}")}
+        log{|logger| logger.info("stripping: '#{input_file}' => '#{output_file}'")}
         strip(output, input)
       end
     end

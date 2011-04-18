@@ -4,28 +4,36 @@ require 'notes_structured_text_strip_bodies'
 require 'optparse'
 require 'logger'
 
-options={}
+options={:verbose=>true}
 
 USAGE = "Usage: #{File.basename(__FILE__)} <output_dir> <input_files> [<input_file>]* "
 
 OptionParser.new do |opts|
   opts.banner = "Usage: #{File.basename(__FILE__)} <output_dir> <input_files> [<input_file>]* "
 
-  opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+  opts.on("-v", "--[no-]verbose", "Run verbosely (default: true)") do |v|
     options[:verbose] = v
   end
 end.parse!
 
-raise USAGE if ARGV.length<2
-
-output_dir = ARGV[0]
-input_files = ARGV[1..-1]
-raise "<output_dir>: #{output_dir} must be a directory\n#{USAGE}" if !File.directory?(output_dir)
-
 NotesStructuredTextStripBodies.logger = Logger.new($stderr)
 if options[:verbose]
-  NotesStructuredTextStripBodies.logger.level=Logger::DEBUG
-else
   NotesStructuredTextStripBodies.logger.level=Logger::INFO
+else
+  NotesStructuredTextStripBodies.logger.level=Logger::WARN
 end
-NotesStructuredTextStripBodies.strip_files(output_dir, input_files, options)
+  
+begin
+  raise "insufficient arguments" if ARGV.length<2
+
+  output_dir = ARGV[0]
+  input_files = ARGV[1..-1]
+
+  NotesStructuredTextStripBodies.strip_files(output_dir, input_files, options)
+  NotesStructuredTextStripBodies.log{|logger| logger.info("complete")}
+rescue Exception=>e
+  NotesStructuredTextStripBodies.log{|logger| logger.error(e)}
+  NotesStructuredTextStripBodies.log{|logger| logger.info(USAGE)}
+  exit(1)
+end
+exit(0)

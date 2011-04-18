@@ -1,6 +1,12 @@
 = notes-structured-text-strip-bodies
 
-Description goes here.
+A command-line tool for remove body text from Lotus Notes Structured Text Exports
+
+ notes_structured_text_strip_bodies <output_dir> <input_file> [<input_file>*]
+
+= Install
+
+ gem install notes-structured-text-strip-bodies
 
 == Contributing to notes-structured-text-strip-bodies
  
