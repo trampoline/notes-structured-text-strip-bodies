@@ -55,7 +55,7 @@ module NotesStructuredTextStripBodies
     while block=read_block(input)
       if is_header_block?(block)
         block.each{|l| output << l << "\n"}
-        output << "\n\n"
+        output << "\n"
       end
     end
   end
