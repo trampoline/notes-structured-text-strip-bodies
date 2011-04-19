@@ -134,6 +134,7 @@ EOF
 
       mock(output).<<(block1[0]){output}
       mock(output).<<("\n").times(5){output}
+      mock(output).<<("\n\n").times(2){output}
       mock(output).<<(block1[1]){output}
       mock(output).<<(block1[2]){output}
       mock(output).<<(block3[0]){output}

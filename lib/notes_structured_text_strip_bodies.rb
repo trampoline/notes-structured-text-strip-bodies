@@ -53,7 +53,10 @@ module NotesStructuredTextStripBodies
 
   def strip(output, input)
     while block=read_block(input)
-      block.each{|l| output << l << "\n"} if is_header_block?(block)
+      if is_header_block?(block)
+        block.each{|l| output << l << "\n"}
+        output << "\n\n"
+      end
     end
   end
 end
