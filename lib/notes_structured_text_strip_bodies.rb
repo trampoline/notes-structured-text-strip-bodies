@@ -48,7 +48,7 @@ module NotesStructuredTextStripBodies
   end
 
   def is_header_block?(block)
-    !!block.find{|l| l =~ /^\$MessageID: /}
+    !!block.find{|l| l =~ /^\$MessageID: /i}
   end
 
   def strip(output, input)

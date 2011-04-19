@@ -52,8 +52,6 @@ describe NotesStructuredTextStripBodies do
       input_file = "baz/boo.txt"
       mock(File).file?("baz/boo.txt"){true}
 
-      logdev = Object.new
-      stub(NotesStructuredTextStripBodies).logdev{logdev}
       logger = Object.new
       stub(NotesStructuredTextStripBodies).logger{logger}
 
@@ -67,7 +65,7 @@ describe NotesStructuredTextStripBodies do
         block.call(input_stream)
       end
 
-      mock(logger).debug(anything){|msg|
+      mock(logger).info(anything){|msg|
         msg.should =~ %r{/foo/bar/boo.txt}
         msg.should =~ %r{baz/boo.txt}
       }
@@ -105,6 +103,12 @@ EOF
 
     it "should return false if there are no lines starting with '$MessageID: ' in the block" do
       NotesStructuredTextStripBodies.is_header_block?( ["foo", "bar", "baz"] ).should == false
+    end
+
+    it "should not be case-sensitive" do
+      NotesStructuredTextStripBodies.is_header_block?( ["foo", "$MESSAGEID: bar", "baz"] ).should == true
+      NotesStructuredTextStripBodies.is_header_block?( ["foo", "$messageID: bar", "baz"] ).should == true
+      NotesStructuredTextStripBodies.is_header_block?( ["foo", "$messageid: bar", "baz"] ).should == true
     end
   end
   
